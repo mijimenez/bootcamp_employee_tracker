@@ -28,13 +28,15 @@ function runSearch() {
         "View All Employees",
         "View All Departments",
         "View All Roles",
+        "View Employees by Managers",
         "Add Department",
         "Add Role",
         "Add Employee",
+        "Remove Department",
+        "Remove Role",
         "Remove Employee",
         "Update Employee Role",
-        "Update Employee Manager",
-        "View All Roles"
+        "Update Employee Manager"
     ]
     })
     .then(function(answer) {
@@ -51,6 +53,10 @@ function runSearch() {
         allEmployeesRole();
         break;
 
+    case "View Employees by Managers":
+        allByManagers();
+        break;
+
     case "Add Department":
         addDepartment();
         break;
@@ -63,6 +69,14 @@ function runSearch() {
         addEmployee();
         break;
 
+    case "Remove Department":
+        removeDepartment();
+        break;
+
+    case "Remove Role":
+        removeRole();
+        break;
+
     case "Remove Employee":
         removeEmployee();
         break;
@@ -73,10 +87,6 @@ function runSearch() {
 
     case "Update Employee Manager":
         updateManager();
-        break;
-
-    case "View All Roles":
-        allRoleSearch();
         break;
     }
     });
@@ -111,6 +121,19 @@ function allEmployeesRole() {
     })
 };
 
+function allByManagers() {
+    var query = `
+    SELECT regularEmployee.id, CONCAT(regularEmployee.first_name, " ", regularEmployee.last_name) AS employee, CONCAT(managerEmployee.first_name, " ", managerEmployee.last_name) AS manager
+    FROM employee regularEmployee
+    LEFT JOIN employee managerEmployee ON regularEmployee.manager_id = managerEmployee.id
+    INNER JOIN role ON regularEmployee.role_id = role.id
+    INNER JOIN department ON role.department_id = department.id`;
+    connection.query(query, function(err, res)  {
+      console.table(res);
+      runSearch();
+    })
+};
+
 function addDepartment() {
     inquirer.prompt([
         {
@@ -125,7 +148,7 @@ function addDepartment() {
         connection.query("INSERT INTO department (name) VALUES ( ? )", [departmentName], function (err, res) {
             if (err) throw err;
 
-            console.log(`Successfully added, departmentName!`)
+            console.log(`Successfully added, ${departmentName} department!`)
             runSearch();
         });
     });
@@ -134,9 +157,9 @@ function addDepartment() {
 function addRole() {
     inquirer.prompt([
         {
-           message: "Enter new role name:",
+           message: "Enter new role title:",
            type: "input",
-           name: "name"
+           name: "title"
         },
         {
            message: "Enter role salary:",
@@ -157,7 +180,7 @@ function addRole() {
         connection.query("INSERT INTO role (title, salary, department_id) VALUES ( ?, ?, ? )", [roleTitle, roleSalary, roleId], function (err, res) {
             if (err) throw err;
 
-            console.log(`Successfully added, ${roleName}!`)
+            console.log(`Successfully added, ${roleTitle} role!`)
             runSearch();
         });
     });
@@ -196,6 +219,46 @@ function addEmployee() {
             if (err) throw err;
 
             console.log(`Successfully added, ${firstName} ${lastName}!`)
+            runSearch();
+        });
+    });
+};
+
+function removeDepartment() {
+    inquirer.prompt([
+        {
+           message: "Enter name of department to remove:",
+           type: "input",
+           name: "department"
+        }
+     ])
+    .then(function (answer) {
+        const departmentRemoved = answer.department
+
+        connection.query(" DELETE FROM department WHERE name = ?", [departmentRemoved], function (err, res) {
+            if (err) throw err;
+
+            console.log(`Successfully removed ${departmentRemoved} department!`)
+            runSearch();
+        });
+    });
+};
+
+function removeRole() {
+    inquirer.prompt([
+        {
+           message: "Enter name of role to remove:",
+           type: "input",
+           name: "role"
+        }
+     ])
+    .then(function (answer) {
+        const roleRemoved = answer.role
+
+        connection.query(" DELETE FROM role WHERE title = ?", [roleRemoved], function (err, res) {
+            if (err) throw err;
+
+            console.log(`Successfully removed ${roleRemoved} role!`)
             runSearch();
         });
     });
@@ -277,14 +340,6 @@ function updateManager() {
             runSearch();
         });
     });
-};
-
-function allRoleSearch() {
-    var query = "SELECT employee.id, role.title, employee.first_name, employee.last_name, department.name, role.salary, employee.manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id";
-    connection.query(query, function(err, res)  {
-      console.table(res);
-      runSearch();
-    })
 };
 
 

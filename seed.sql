@@ -22,8 +22,9 @@ SELECT * FROM role;
 SELECT * FROM employee;
 
 --- Inner join to put id, first_name, last_name, title, department, salary and manager into one table
-
-SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, employee.manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id
+SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, employee.manager_id
+FROM employee INNER JOIN role ON employee.role_id = role.id
+INNER JOIN department ON role.department_id = department.id
 
 -- left join with inner join of 3 tables to connect manager_id to employee role.id and rename as actual manager name
 SELECT regularEmployee.id, regularEmployee.first_name, regularEmployee.last_name, role.title, department.name, role.salary, CONCAT(managerEmployee.first_name, " ", managerEmployee.last_name) AS manager
