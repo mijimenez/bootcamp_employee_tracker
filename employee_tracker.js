@@ -27,7 +27,6 @@ function init() {
     });
 };
 
-
 function runSearch() {
     inquirer
     .prompt({
@@ -106,24 +105,6 @@ function allEmployeesManager() {
     })
 };
 
-// function addEmployee() {
-//     inquirer
-//     .prompt({
-//       name: "artist",
-//       type: "input",
-//       message: "What artist would you like to search for?"
-//     })
-//     .then(function(answer) {
-//       var query = "SELECT position, song, year FROM top5000 WHERE ?";
-//       connection.query(query, { artist: answer.artist }, function(err, res) {
-//         for (var i = 0; i < res.length; i++) {
-//           console.log("Position: " + res[i].position + " || Song: " + res[i].song + " || Year: " + res[i].year);
-//         }
-//         runSearch();
-//       });
-//     });
-// }
-
 function addEmployee() {
     inquirer.prompt([
         {
@@ -148,19 +129,19 @@ function addEmployee() {
         }
      ])
     .then(function (answer) {
-        const first_name = answer.employeeFirstName
-        const last_name = answer.employeeLastName
-        const role_id = answer.employeeRole
-        const manager_id = answer.employeeManagerId
+        const firstName = answer.employeeFirstName
+        const lastName = answer.employeeLastName
+        const roleId = answer.employeeRole
+        const managerId = answer.employeeManagerId
 
-        connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ( ?, ?, ?, ? )", [first_name, last_name, role_id, manager_id], function (err, res) {
+        connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ( ?, ?, ?, ? )", [firstName, lastName, roleId, managerId], function (err, res) {
             if (err) throw err;
 
-            console.log(`Successfully added, ${first_name} ${last_name}!`)
+            console.log(`Successfully added, ${firstName} ${lastName}!`)
             runSearch();
         });
     });
-}
+};
 
 function removeEmployee() {
     inquirer.prompt([
@@ -176,16 +157,76 @@ function removeEmployee() {
         }
      ])
     .then(function (answer) {
-        const first_name = answer.employeeFirstName
-        const last_name = answer.employeeLastName
+        const firstName = answer.employeeFirstName
+        const lastName = answer.employeeLastName
 
-        connection.query(" DELETE FROM employee WHERE first_name = ? OR last_name = ?", [first_name, last_name], function (err, res) {
+        connection.query(" DELETE FROM employee WHERE first_name = ? OR last_name = ?", [firstName, lastName], function (err, res) {
             if (err) throw err;
 
-            console.log(`Successfully removed, ${first_name} ${last_name}!`)
+            console.log(`Successfully removed, ${firstName} ${lastName}!`)
             runSearch();
         });
     });
-}
+};
+
+function updateRole() {
+    inquirer.prompt([
+        {
+            message: "Enter the first name of the employee to update role:",
+            type: "input",
+            name: "employeeName"
+         },
+        {
+           message: "Enter the new role id:",
+           type: "input",
+           name: "roleId"
+        }
+     ])
+    .then(function (answer) {
+        const employeeName = answer.employeeName
+        const roleId = answer.roleId
+
+        connection.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [roleId, employeeName], function (err, res) {
+            if (err) throw err;
+
+            console.log(`Successfully updated ${employeeName}'s role!`)
+            runSearch();
+        });
+    });
+};
+
+function updateManager() {
+    inquirer.prompt([
+        {
+            message: "Enter the first name of the employee to update manager:",
+            type: "input",
+            name: "employeeName"
+         },
+        {
+           message: "Enter the new manager id:",
+           type: "input",
+           name: "managerId"
+        }
+     ])
+    .then(function (answer) {
+        const employeeName = answer.employeeName
+        const managerId = answer.managerId
+
+        connection.query("UPDATE employee SET manager_id = ? WHERE first_name = ?", [ managerId, employeeName], function (err, res) {
+            if (err) throw err;
+
+            console.log(`Successfully updated ${employeeName}'s manager!`)
+            runSearch();
+        });
+    });
+};
+
+function allRoleSearch() {
+    var query = "SELECT employee.id, role.title, employee.first_name, employee.last_name, department.name, role.salary, employee.manager_id FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id";
+    connection.query(query, function(err, res)  {
+      console.table(res);
+      runSearch();
+    })
+};
 
 
