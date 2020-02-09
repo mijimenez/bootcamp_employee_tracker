@@ -158,7 +158,7 @@ function addDepartment() {
     .then(function (answer) {
         const departmentName = answer.name
 
-        connection.query("INSERT INTO department (name) VALUES ( ? )", [departmentName], function (err, res) {
+        connection.query("INSERT INTO department (depart_name) VALUES ( ? )", [departmentName], function (err, res) {
             if (err) throw err;
 
             console.log(`Successfully added, ${departmentName} department!`)
@@ -248,7 +248,7 @@ function removeDepartment() {
     .then(function (answer) {
         const departmentRemoved = answer.department
 
-        connection.query(" DELETE FROM department WHERE name = ?", [departmentRemoved], function (err, res) {
+        connection.query(" DELETE FROM department WHERE depart_name = ?", [departmentRemoved], function (err, res) {
             if (err) throw err;
 
             console.log(`Successfully removed ${departmentRemoved} department!`)
