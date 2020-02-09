@@ -25,6 +25,7 @@ function runSearch() {
     type: "rawlist",
     message: "What would you like to do?",
     choices: [
+        "View All Employee Information",
         "View All Employees",
         "View All Departments",
         "View All Roles",
@@ -41,6 +42,10 @@ function runSearch() {
     })
     .then(function(answer) {
     switch (answer.action) {
+    case "View All Employee Information":
+        allEmployeeInfo();
+        break;
+
     case "View All Employees":
         allEmployeeSearch();
         break;
@@ -92,13 +97,21 @@ function runSearch() {
     });
 }
 
-function allEmployeeSearch() {
+function allEmployeeInfo() {
     var query = `
-    SELECT regularEmployee.id, regularEmployee.first_name, regularEmployee.last_name, role.title, department.name, role.salary, CONCAT(managerEmployee.first_name, " ", managerEmployee.last_name) AS manager
+    SELECT regularEmployee.id, regularEmployee.first_name, regularEmployee.last_name, role.title, department.depart_name, role.salary, CONCAT(managerEmployee.first_name, " ", managerEmployee.last_name) AS manager
     FROM employee regularEmployee
     LEFT JOIN employee managerEmployee ON regularEmployee.manager_id = managerEmployee.id
     INNER JOIN role ON regularEmployee.role_id = role.id
     INNER JOIN department ON role.department_id = department.id`;
+    connection.query(query, function(err, res)  {
+      console.table(res);
+      runSearch();
+    })
+};
+
+function allEmployeeSearch() {
+    var query = `SELECT * FROM employee`;
     connection.query(query, function(err, res)  {
       console.table(res);
       runSearch();
