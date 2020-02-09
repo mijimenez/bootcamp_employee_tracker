@@ -1,21 +1,23 @@
 -- Create starting rows with values for each of the 3 tables
 INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES
-("Jameel", "English", 1, 1),
-("Roshan", "Denton", 1, 2),
-("Lorraine", "Flynn", 1, 2),
-("Keagan", "Felix", 2, 1),
-("Abdur", "Espinosa", 2, 1);
+("Jameel", "English", 1, 5),
+("Roshan", "Denton", 2, 6),
+("Lorraine", "Flynn", 3, 5),
+("Keagan", "Felix", 4, 6),
+("Lisa", "Johnson", 5, null),
+("Abdur", "Espinosa", 6, null);
 
 INSERT INTO department (depart_name) VALUES 
 ("Marketing"),
-("Engineering"),
-("Sales");
+("Web Team");
 
 INSERT INTO role (title, salary, department_id) VALUES
 ("Designer", 40000.00, 1),
 ("Front-End Developer", 80000.00, 2),
-("Salesperson", 45000.00, 1),
-("Back-End Developer", 11000.00, 2);
+("Copywriter", 45000.00, 1),
+("Back-End Developer", 90000.00, 2),
+("Marketing Director", 13000.00, 1),
+("Senior Developer", 10000.00, 2);
 
 SELECT * FROM department;
 SELECT * FROM role;
